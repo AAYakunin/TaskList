@@ -1,0 +1,134 @@
+* {
+    box-sizing: border-box;
+    background-color: darkslategray;
+}
+
+ul {
+    margin: 2px;
+    padding: 0;
+}
+
+ul li {
+    cursor: pointer;
+    position: relative;
+    margin-bottom: 4px;
+    margin-top: 4px;
+    padding: 12px 8px 12px 40px;
+    background: #25bfbf;
+    font-size: 18px;
+    transition: 0.2s;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    border-radius: 7px;
+}
+
+ul li:nth-child(odd) {
+    background: #b4ebeb;
+}
+
+ul li:hover {
+    background: #fffeeb;
+}
+
+ul li.checked {
+    background: #5c7c7c;
+    color: #fff;
+    text-decoration: line-through;
+}
+
+ul li.checked::before {
+    content: '';
+    position: absolute;
+    border-color: #fff;
+    border-style: solid;
+    border-width: 0 2px 2px 0;
+    top: 10px;
+    left: 16px;
+    transform: rotate(45deg);
+    height: 15px;
+    width: 7px;
+}
+
+.close {
+    position: absolute;
+    right: 5px;
+    padding: 12px 16px 12px 16px;
+    border-radius: 20%;
+    background-color: #2f4f4f;
+    color: white;
+}
+
+.close:hover {
+    background-color: #f44336;
+    color: white;
+}
+
+.header {
+    background-color: #71bcbc;
+    padding: 30px 40px;
+    color: #2f4f4f;
+    text-align: center;
+    border-radius: 10px;
+}
+
+.header h2 {
+    background-color: #71bcbc;
+    font-family: Helvetica, sans-serif;
+}
+
+.header:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+input {
+    margin: 0;
+    border: none;
+    border-radius: 0;
+    width: 75%;
+    padding: 10px;
+    float: left;
+    font-size: 16px;
+    color: #b3eaea;
+}
+
+.addButton {
+    padding: 10px;
+    width: 25%;
+    background: #b3eaea;
+    color: #2f4f4f;
+    float: left;
+    text-align: center;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+    border-radius: 0;
+}
+
+.addButton:hover {
+    background-color: #749494;
+    color: #b2e9e9;
+    cursor: pointer;
+}
+
+.button {
+    padding: 10px;
+    width: 50%;
+    background: #b3eaea;
+    color: #2f4f4f;
+    float: left;
+    text-align: center;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+    border-radius: 0;
+}
+
+.button:hover {
+    background-color: #749494;
+    color: #b2e9e9;
+    cursor: pointer;
+}

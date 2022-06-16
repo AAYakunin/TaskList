@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Список дел</title>
+    <script src="scripts.js" defer></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="header">
+        <h2>СПИСОК ДЕЛ</h2>
+        <input type="text" id="newTaskText" placeholder="Введите новую задачу...">
+        <span onclick="addElement()" class="addButton">Добавить</span> <br>
+        <span onclick="del()" class="button">Очистка</span>
+        <span onclick="delAll()" class="button">Очистить все</span>
+    </div>
+    <ul id="taskUL">
+
+    </ul>
+</body>
+</html>
