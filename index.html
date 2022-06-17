@@ -10,12 +10,14 @@
     <div class="header">
         <h2>СПИСОК ДЕЛ</h2>
         <input type="text" id="newTaskText" placeholder="Введите новую задачу...">
-        <span onclick="addElement()" class="addButton">Добавить</span> <br>
-        <span onclick="del()" class="button">Очистка</span>
-        <span onclick="delAll()" class="button">Очистить все</span>
+        <span onclick="addElement()" class="addButton">Добавить</span>
+        <span onclick="delAll()" class="button">Очистить</span>
     </div>
     <ul id="taskUL">
 
     </ul>
+    <span onclick="filterChecked()" class="filterButton">Выполненные</span>
+    <span onclick="filterUnchecked()" class="filterButton">Невыполненные</span>
+    <span onclick="filterAll()" class="filterButton">Все</span>
 </body>
 </html>
