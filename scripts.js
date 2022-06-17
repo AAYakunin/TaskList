@@ -1,13 +1,3 @@
-//"Корзина"
-let onDel = [];
-
-//Функция отчистки "корзины"
-function del() {
-    while (onDel.length > 0) {
-        localStorage.removeItem(onDel.pop());
-    }
-}
-
 //Функция удаления всех пунктов списка
 function delAll() {
     localStorage.clear();
@@ -15,95 +5,108 @@ function delAll() {
 }
 
 //Функция подгрузки элементов списка из localstorage
-function init() {
-    alert(localStorage.length);
+function init(checked = true, unchecked = true) {
     if(localStorage.length > 0) {
-        for (let i = 0; i < localStorage.length; i++) {
-            alert(localStorage.key(i) + ' ' + localStorage.getItem(localStorage.key(i)));
-            addElement(localStorage.key(i), false);
+        if(unchecked) {
+            for (let i = 0; i < localStorage.length; i++) {
+                if (localStorage.getItem(localStorage.key(i)) !== 'true') {
+                    addElement(localStorage.key(i), false);
+                }
+            }
+        }
+        if(checked) {
+            for (let i = 0; i < localStorage.length; i++) {
+                if (localStorage.getItem(localStorage.key(i)) === 'true') {
+                    let newLi = addElement(localStorage.key(i), false, true);
+                    newLi.classList.toggle("checked", true);
+                }
+            }
         }
     }
-    /*
-    addCloseInit();
-    addCloseListenersInit();
-    addCheckedListenersInit();
-     */
+}
+
+function filterChecked() {
+    let myUL = document.getElementById("taskUL");
+    myUL.innerHTML = '';
+    init(true, false);
+}
+
+function filterUnchecked() {
+    let myUL = document.getElementById("taskUL");
+    myUL.innerHTML = '';
+    init(false, true);
+}
+
+function filterAll() {
+    let myUL = document.getElementById("taskUL");
+    myUL.innerHTML = '';
+    init();
+}
+
+//Функция обновления состояния выполнено/не выполнено
+function updateChecked() {
+    let lis = document.getElementsByTagName('li');
+    for (let i = 0; i < lis.length; i++) {
+        if(lis[i].style.display !== "none") {
+            if (lis[i].classList.contains("checked"))
+                localStorage.setItem(lis[i].textContent, "true");
+            else
+                localStorage.setItem(lis[i].textContent, "false");
+        }
+    }
 }
 
 //Функция добавления к элементу списка кнопки удаления
 function addClose(target) {
     let newButton = document.createElement("span");
     newButton.className = "close";
+    newButton.onclick = function () {
+        target.style.display = "none";
+        localStorage.removeItem(target.childNodes[0].textContent);
+    }
     target.appendChild(newButton);
-    return newButton;
-}
 
-//Функция добавления кнопки удаления ко всем элементам списка
-function addCloseInit() {
-    let liList = document.getElementsByTagName("li");
-    for (let i = 0; i < liList.length; i++) {
-        addClose(liList[i]);
-    }
-}
-
-//Функция добавления обработчика к кнопке удаления
-function addCloseListener(target) {
-    target.onclick = function () {
-        let div = this.parentElement;
-        div.style.display = "none";
-        onDel.push(target.parentElement.childNodes[0].textContent);
-    }
-}
-
-//Функция добавления обработчиков ко всем кнопкам удаления
-function addCloseListenersInit() {
-    let close = document.getElementsByClassName("close");
-    for (let i = 0; i < close.length; i++) {
-        addCloseListener(close[i]);
-    }
 }
 
 //Функция добавления обработчика нажатия на пункт списка - выполнено/не выполнено
 function addCheckedListener(target) {
     target.onclick = function () {
-        //target.classList.toggle("checked");
-
-        localStorage.setItem(target.childNodes[0].textContent, target.classList.toggle("checked").toString());
-    }
-    //return target.childNodes[0].textContent;
-}
-
-//Функция добавления обработчика нажатия на все пункты списка
-function addCheckedListenersInit() {
-    let liList = document.getElementsByTagName("li");
-    for (let i = 0; i < liList.length; i++) {
-        addCheckedListener(liList[i]);
+        target.classList.toggle("checked");
+        updateChecked();
     }
 }
 
 //Функция добавления нового пункта списка
-function addElement(input = document.getElementById("newTaskText").value, write = true) {
+function addElement(input = document.getElementById("newTaskText").value, write = true, checked = false) {
     let text = input;
     let newLi = document.createElement('li');
     let textNode = document.createTextNode(text);
-    newLi.appendChild(textNode);
+
+    let lis = document.getElementsByTagName('li');
+    for (let i = 0; i < lis.length; i++) {
+        if(lis[i].textContent === text) {
+            alert('Такое уже есть!');
+            document.getElementById("newTaskText").value = "";
+            return;
+        }
+    }
     if (text === '') {
         alert("Пустой текст!");
+        document.getElementById("newTaskText").value = "";
+        return;
     } else {
         let myUL = document.getElementById("taskUL");
+        newLi.appendChild(textNode);
+        addCheckedListener(newLi);
+        addClose(newLi);
         myUL.appendChild(newLi);
     }
     document.getElementById("newTaskText").value = "";
 
-    addCloseListener(addClose(newLi));
-    addCheckedListener(newLi);
-    let value = localStorage.getItem(text);
-    if (value === "true") {
-        newLi.classList.toggle("checked");
-    }
     if (write) {
-        localStorage.setItem(text, value);
+        localStorage.setItem(text, checked.toString());
     }
+    return newLi;
 }
 init();
-//TODO: Фильтрация - сделано/не сделано/все
+
