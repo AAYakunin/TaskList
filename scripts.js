@@ -1,59 +1,97 @@
-//Функция удаления всех пунктов списка
-function delAll() {
-    localStorage.clear();
-    location.reload();
+const lsArrayName = 'TasksArray';
+let arr = {};
+
+//Заполнение массива из localStorage, создание при отсутствии
+function arrInit() {
+    let a = localStorage.getItem(lsArrayName);
+    if(a !== null) {
+        arr = JSON.parse(a);
+    }
+    else {
+        localStorage.setItem(lsArrayName, JSON.stringify(arr));
+    }
 }
 
-//Функция подгрузки элементов списка из localstorage
-function init(checked = true, unchecked = true) {
-    if(localStorage.length > 0) {
-        if(unchecked) {
-            for (let i = 0; i < localStorage.length; i++) {
-                if (localStorage.getItem(localStorage.key(i)) !== 'true') {
-                    addElement(localStorage.key(i), false);
+//Обновление данных в localStorage
+function updateLSArray() {
+    localStorage.setItem(lsArrayName, JSON.stringify(arr));
+    render();
+}
+
+//Отрисовка списка на экране
+function render(checked = true, unchecked = true) {
+    let myUL = document.getElementById("taskUL");
+    myUL.innerHTML = '';
+
+    function renderTask(text) {
+        let newLi = document.createElement('li');
+        let textNode = document.createTextNode(text);
+        let myUL = document.getElementById("taskUL");
+        newLi.appendChild(textNode);
+        addCheckedListener(newLi);
+        addClose(newLi);
+        myUL.appendChild(newLi);
+        return newLi;
+    }
+
+    if(Object.keys(arr).length > 0) {
+        if(checked && unchecked) {
+            for (let key in arr) {
+                if (arr[key] !== 'true') {
+                    renderTask(key);
                 }
-            }
-        }
-        if(checked) {
-            for (let i = 0; i < localStorage.length; i++) {
-                if (localStorage.getItem(localStorage.key(i)) === 'true') {
-                    let newLi = addElement(localStorage.key(i), false, true);
+                else {
+                    let newLi = renderTask(key);
                     newLi.classList.toggle("checked", true);
                 }
             }
         }
+        else {
+            if (unchecked) {
+                for (let key in arr) {
+                    if (arr[key] !== 'true') {
+                        renderTask(key);
+                    }
+                }
+            }
+            if (checked) {
+                for (let key in arr) {
+                    if (arr[key] === 'true') {
+                        let newLi = renderTask(key);
+                        newLi.classList.toggle("checked", true);
+                    }
+                }
+            }
+        }
     }
 }
 
+//Функция удаления всех пунктов списка
+function delAll() {
+    arr = {};
+    localStorage.setItem(lsArrayName, JSON.stringify(arr));
+    location.reload();
+}
+
+//Фильтр "только выполненные"
 function filterChecked() {
     let myUL = document.getElementById("taskUL");
     myUL.innerHTML = '';
-    init(true, false);
+    render(true, false);
 }
 
+//Фильтр "только невыполненные"
 function filterUnchecked() {
     let myUL = document.getElementById("taskUL");
     myUL.innerHTML = '';
-    init(false, true);
+    render(false, true);
 }
 
+//Фильтр "все"
 function filterAll() {
     let myUL = document.getElementById("taskUL");
     myUL.innerHTML = '';
-    init();
-}
-
-//Функция обновления состояния выполнено/не выполнено
-function updateChecked() {
-    let lis = document.getElementsByTagName('li');
-    for (let i = 0; i < lis.length; i++) {
-        if(lis[i].style.display !== "none") {
-            if (lis[i].classList.contains("checked"))
-                localStorage.setItem(lis[i].textContent, "true");
-            else
-                localStorage.setItem(lis[i].textContent, "false");
-        }
-    }
+    render();
 }
 
 //Функция добавления к элементу списка кнопки удаления
@@ -62,7 +100,9 @@ function addClose(target) {
     newButton.className = "close";
     newButton.onclick = function () {
         target.style.display = "none";
-        localStorage.removeItem(target.childNodes[0].textContent);
+        delete arr[target.childNodes[0].textContent];
+        updateLSArray();
+        event.stopPropagation();
     }
     target.appendChild(newButton);
 
@@ -72,41 +112,33 @@ function addClose(target) {
 function addCheckedListener(target) {
     target.onclick = function () {
         target.classList.toggle("checked");
-        updateChecked();
+        arr[target.textContent] = target.classList.contains("checked").toString();
+        updateLSArray();
+        //updateChecked();
     }
 }
 
 //Функция добавления нового пункта списка
-function addElement(input = document.getElementById("newTaskText").value, write = true, checked = false) {
-    let text = input;
-    let newLi = document.createElement('li');
-    let textNode = document.createTextNode(text);
+function addElement() {
+    let text = document.getElementById("newTaskText").value;
 
-    let lis = document.getElementsByTagName('li');
-    for (let i = 0; i < lis.length; i++) {
-        if(lis[i].textContent === text) {
-            alert('Такое уже есть!');
-            document.getElementById("newTaskText").value = "";
-            return;
-        }
+    if(arr[text] !== undefined) {
+        alert('Такое уже есть!');
+        document.getElementById("newTaskText").value = "";
+        return;
     }
-    if (text === '') {
+    else if (text === '') {
         alert("Пустой текст!");
         document.getElementById("newTaskText").value = "";
         return;
     } else {
-        let myUL = document.getElementById("taskUL");
-        newLi.appendChild(textNode);
-        addCheckedListener(newLi);
-        addClose(newLi);
-        myUL.appendChild(newLi);
+        arr[text] = 'false';
+        updateLSArray();
+        render();
     }
+
     document.getElementById("newTaskText").value = "";
-
-    if (write) {
-        localStorage.setItem(text, checked.toString());
-    }
-    return newLi;
 }
-init();
 
+arrInit();
+render();
